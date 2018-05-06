@@ -104,8 +104,10 @@ function queryInventory() {
           
         }
         function calculateTotal() {
-            let totalCost = answer.quantity * itemCost; 
-            console.log(`Your total is ${totalCost}`);
+            let totalCost = Math.round(answer.quantity * itemCost * 100) / 100; 
+            console.log(`Your total is $${totalCost}`);
+            console.log(`Thank you for shopping`);
+            // promp, see inventory, or exit;
         }
 
         
