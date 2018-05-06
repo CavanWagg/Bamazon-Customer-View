@@ -1,3 +1,6 @@
+// Improvements 
+// Add timers for better User experience
+
 var mysql = require("mysql");
 
 var inquirer = require('inquirer');
@@ -54,7 +57,7 @@ function queryInventory() {
   const promptUserQuestion = function() {
     inquirer.prompt([/* Pass your questions in here */
 
-      { name: "item",
+      { name: "item_id",
             type: "input",
             message: "Please enter the ID # of the product you would like to buy",
             validate: function(value) {
@@ -65,19 +68,50 @@ function queryInventory() {
             }
           },
             {
-              name: "item",
+              name: "quantity",
             type: "input", 
             message: "Please enter the quantity",
+            validate: function(value) {
+              if (isNaN(value) === false) {
+                return true;
+              }
+              return false;
+            }
             }
     
     ]).then(function(answer) {
+      const selectedItem = answer.item_id;
+      
       const query = "SELECT * FROM products WHERE ?";
-      connection.query(query, {item_id: answer.item_id }, function(err, res) {
+      connection.query(query, { item_id: selectedItem,}, function(err, res) {
+        const itemCost = res[0].price;
+        console.log(answer.quantity);
         
-      } )
+        if (res[0].stock_quantity < answer.quantity) {
+          console.log(`I am sorry, we do not have enough ${res[0].product_name} in stock to fulfill your request 
+          please check back later or take a look at our other products.`);
+          queryInventory();
+        } else {
+          let answerQuantity = answer.quantity;
+          let updateQuantity = res[0].stock_quantity - answerQuantity;
+          let sqlUpdate = 'UPDATE products SET stock_quantity = ? WHERE item_id = ?'
+          connection.query(sqlUpdate, [updateQuantity, answer.item_id], (err, data) => {
+            if(err) throw err;
+            console.log(`item updated`);
+            calculateTotal();
+            
+          });
+          
+        }
+        function calculateTotal() {
+            let totalCost = answer.quantity * itemCost; 
+            console.log(`Your total is ${totalCost}`);
+        }
+
+        
+        });
         
     });
   
 
   }
-  
