@@ -1,6 +1,10 @@
 // Improvements 
 // Add timers for better User experience
 
+require('dotenv').config();
+
+const keys = require('./key.js');
+
 var mysql = require("mysql");
 
 var inquirer = require('inquirer');
@@ -13,7 +17,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "$Casekeenum7",
+  password: mysql.password,
   database: "bamazon_DB"
 });
 
