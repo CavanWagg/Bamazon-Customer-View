@@ -3,7 +3,7 @@
 
 require('dotenv').config();
 
-const keys = require('./key.js');
+// const password = new Mysql(keys.mysql);
 
 var mysql = require("mysql");
 
@@ -17,7 +17,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: mysql.password,
+  password: process.env.MYSQL_PASSWORD,
   database: "bamazon_DB"
 });
 
