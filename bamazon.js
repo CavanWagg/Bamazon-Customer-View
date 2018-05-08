@@ -1,12 +1,11 @@
 // Improvements 
-// Add timers for better User experience
-
+// dotenv for mysql password
 require('dotenv').config();
 
 var mysql = require("mysql");
-
 var inquirer = require('inquirer');
-
+var colors = require('colors/safe');
+// database connection 
 var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -14,14 +13,15 @@ var connection = mysql.createConnection({
   // username
   user: "root",
 
-  // password
+  // password from .env
   password: process.env.MYSQL_PASSWORD,
+  // database
   database: "bamazon_DB"
 });
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("Hello welcome to bamazon");
+  console.log(colors.rainbow("Hello, welcome to Bamazon!"));
   setTimeout(askName, 1000);
  
 });
@@ -33,7 +33,7 @@ function askName() {
     message: 'Please enter your name for identification'
   }];
 
-
+// log name and query inventory
 inquirer.prompt(user).then(answers => {
   console.log(`Thank you ${answers.name}, please have a look at our inventory`);
   setTimeout(queryInventory, 500);
@@ -41,19 +41,20 @@ inquirer.prompt(user).then(answers => {
 };
 
 
-// return name then display inventory
+// Display inventory function
 function queryInventory() {
+  // Select all items from products table and log it in read-friendly format
   connection.query("SELECT * FROM products", function(err, res) {
     for (var i = 0; i < res.length; i++) {
-      console.log(res[i].item_id + " | " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity);
+      console.log(colors.yellow(res[i].item_id) + " | " + colors.cyan(res[i].product_name) + " | " + res[i].department_name + " | " + colors.green("$") + colors.green(res[i].price) + " | " + res[i].stock_quantity);
     }
     console.log("-----------------------------------");
     setTimeout(promptUserQuestion, 1500);
   })
 }
 
- // prompt user with 2 message
 
+  
   // Please enter the ID of the product you would like to buy
   // Please enter the quantity
   const promptUserQuestion = function() {
@@ -87,19 +88,19 @@ function queryInventory() {
       const query = "SELECT * FROM products WHERE ?";
       connection.query(query, { item_id: selectedItem,}, function(err, res) {
         const itemCost = res[0].price;
-        // console.log(answer.quantity);
+        // console.log(answer.quantity);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
         
         if (res[0].stock_quantity < answer.quantity) {
           console.log(`I am sorry, we do not have enough ${res[0].product_name} in stock to fulfill your request 
           please check back later or take a look at our other products.`);
-          queryInventory();
+         setTimeout(queryInventory, 1500);
         } else {
           let answerQuantity = answer.quantity;
           let updateQuantity = res[0].stock_quantity - answerQuantity;
           let sqlUpdate = 'UPDATE products SET stock_quantity = ? WHERE item_id = ?'
           connection.query(sqlUpdate, [updateQuantity, answer.item_id], (err, data) => {
             if(err) throw err;
-            console.log(`item updated`);
+            // console.log(`item updated`);
             setTimeout(calculateTotal, 1000);
             
           });
@@ -107,19 +108,19 @@ function queryInventory() {
         }
         function calculateTotal() {
             let totalCost = Math.round(answer.quantity * itemCost * 100) / 100; 
-            console.log(`Your total is $${totalCost}`);
-            console.log(`Thank you for shopping`);
+            console.log('Your total is ' + colors.green('$') + colors.green(totalCost));
+            console.log(colors.rainbow('Thank you for shopping!'));
             inquirer.prompt([
               {
                 type: "list",
                 name: "shopOrStop",
                 message: "Would you like to continue shopping?",
-                choices: ["Yes", "No"]
+                choices: [colors.green("Yes"), colors.red("No")]
               },
             ]).then(function(user) {
               console.log(user.shopOrStop);
-              if (user.shopOrStop === "No"){
-                console.log('Have a good day')
+              if (user.shopOrStop === colors.red("No")){
+                console.log(colors.rainbow('Have a good day!'));
                 process.exit();
               } else {
                 queryInventory();
