@@ -1,6 +1,18 @@
 // Improvements 
 // dotenv for mysql password
 require('dotenv').config();
+const CFonts = require('cfonts');
+
+CFonts.say('BAMAZON', {
+  font: '3d',              // define the font face
+  align: 'left',              // define text alignment
+  colors: ['yellow','magentaBright'],         // define all colors
+  background: 'transparent',  // define the background color, you can also use `backgroundColor` here as key
+  letterSpacing: 1,           // define letter spacing
+  lineHeight: 1,              // define the line height
+  space: true,                // define if the output text should have empty lines on top and on the bottom
+  maxLength: '0',             // define how many character can be on one line
+});
 
 var mysql = require("mysql");
 var inquirer = require('inquirer');
@@ -25,6 +37,7 @@ connection.connect(function(err) {
   setTimeout(askName, 1000);
  
 });
+
 // ask for name 
 function askName() {
   var user = [{
