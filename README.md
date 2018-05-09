@@ -4,4 +4,7 @@ The goal of this assignment was to create an Amazon-like storefront using node a
 
 
 
-<a href="https://cl.ly/1w2D1J45193B">![Foo](Bamazon.png)]</a>
+
+**Click the image below for a video demonstration**
+
+<a href="https://cl.ly/1w2D1J45193B">![Foo](Bamazon.png)</a>
